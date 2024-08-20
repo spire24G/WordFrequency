@@ -5,3 +5,9 @@
 /bin
 /.vs
 /obj
+/WordFrequencyTests/bin/Debug/net8.0
+/WordFrequencyTests/obj
+/WordFrequencyApp/.vs
+/WordFrequencyApp/bin/Debug/net8.0
+/WordFrequencyApp/bin/Debug/net8.0/runtimes/win/lib/net6.0/System.Diagnostics.EventLog.dll
+/WordFrequencyApp/obj
