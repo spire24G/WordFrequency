@@ -1,4 +1,4 @@
-﻿namespace WordFrequency.Tools;
+﻿namespace WordFrequencyApp.Logger;
 
 public interface ILogger
 {

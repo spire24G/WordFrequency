@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using WordFrequency.Tools;
+using WordFrequencyApp.Logger;
 
-namespace WordFrequency.Helpers;
+namespace WordFrequencyApp.Helpers;
 
 public enum EArgumentType
 {
@@ -19,39 +19,43 @@ public static class ArgumentHelper
     /// <param name="args">All command line arguments </param>
     /// <param name="logger"></param>
     /// <exception cref="NotImplementedException"></exception>
-    public static bool ValidateCommandLineArguments(string[] args, ILogger logger)
+    public static ArgumentsInformation ValidateCommandLineArguments(string[] args, ILogger logger)
     {
         if (args.Length == 0)
         {
             logger.Log(ELogType.Error, "Command line args can not be null or empty");
-            return false;
+            return new ArgumentsInformation { hasErrors = true };
         }
 
         if (!CommandLineArgumentsContainsArgument(args, Input))
         {
-            logger.Log(ELogType.Error, "Command line args must contain \"-input FilePath\"");
-            return false;
+            logger.Log(ELogType.Error, "Command line args must contain one \"-input FilePath\"");
+            return new ArgumentsInformation { hasErrors = true };
         }
 
-        if (!CommandLineArgumentsHasValidArgumentValue(args, Input, EArgumentType.Path))
+        if (!CommandLineArgumentsHasValidArgumentValue(args, Input, EArgumentType.Path, out string inputFilePath))
         {
             logger.Log(ELogType.Error, "Command line args must contain a valid file path as input file");
-            return false;
+            return new ArgumentsInformation { hasErrors = true };
         }
 
         if (!CommandLineArgumentsContainsArgument(args, Output))
         {
-            logger.Log(ELogType.Error, "Command line args must contain \"-ouput FilePath\"");
-            return false;
+            logger.Log(ELogType.Error, "Command line args must contain one \"-ouput FilePath\"");
+            return new ArgumentsInformation { hasErrors = true };
         }
 
-        if (!CommandLineArgumentsHasValidArgumentValue(args, Output, EArgumentType.Path))
+        if (!CommandLineArgumentsHasValidArgumentValue(args, Output, EArgumentType.Path, out string outputFilePath))
         {
             logger.Log(ELogType.Error, "Command line args must contain a valid file path as output file");
-            return false;
+            return new ArgumentsInformation { hasErrors = true };
         }
 
-        return true;
+        return new ArgumentsInformation
+        {
+            InputFilePath = inputFilePath,
+            OutPutFilePath = outputFilePath,
+        };
     }
 
     private static bool CommandLineArgumentsContainsArgument(string[] args, string argument)
@@ -62,10 +66,15 @@ public static class ArgumentHelper
     /// <summary>
     /// Argument must be inside args
     /// </summary>
-    private static bool CommandLineArgumentsHasValidArgumentValue(string[] args, string argument, EArgumentType argumentType)
+    private static bool CommandLineArgumentsHasValidArgumentValue(
+        string[] args,
+        string argument,
+        EArgumentType argumentType,
+        out string argumentValue)
     {
-        int index = Array.IndexOf(args, argument);
+        argumentValue = string.Empty;
 
+        int index = Array.IndexOf(args, argument);
         if (index == -1)
         {
             throw new ArgumentException("Argument must be inside args");
@@ -79,9 +88,15 @@ public static class ArgumentHelper
         // TODO 
         //optimization for maxCPU
         // found idea for global path //
-        return argumentType == EArgumentType.Path
+        bool isValid = argumentType == EArgumentType.Path
             ? ValidateGlobalPath(nextArg)
             : true;
+
+        if (!isValid)
+            return false;
+        
+        argumentValue = nextArg;
+        return true;
     }
 
     private static bool ValidateGlobalPath(string arg)

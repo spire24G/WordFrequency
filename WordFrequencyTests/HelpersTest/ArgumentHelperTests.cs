@@ -1,8 +1,9 @@
 using Moq;
-using WordFrequency.Helpers;
-using WordFrequency.Tools;
+using WordFrequencyApp;
+using WordFrequencyApp.Helpers;
+using WordFrequencyApp.Logger;
 
-namespace WorkFrequencyTests
+namespace WordFrequencyTests.HelpersTest
 {
     [TestClass]
     public class ArgumentHelperTests
@@ -22,9 +23,9 @@ namespace WorkFrequencyTests
         {
             string[] args = [];
 
-            bool result = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
 
-            Assert.IsFalse(result, "Empty args should not be valid");
+            Assert.IsTrue(argumentsInformation.hasErrors, "Empty args should not be valid");
         }
 
         [TestMethod]
@@ -33,9 +34,9 @@ namespace WorkFrequencyTests
 
             string[] args = ["test", "-output", "c:/tmp"];
 
-            bool result = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
 
-            Assert.IsFalse(result, "No input in args should not be valid");
+            Assert.IsTrue(argumentsInformation.hasErrors, "No input in args should not be valid");
         }
 
         [TestMethod]
@@ -44,9 +45,9 @@ namespace WorkFrequencyTests
 
             string[] args = ["-input", "c:/tmp", "-input", "c/tmp2", "-output", "c:/tmp"];
 
-            bool result = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
 
-            Assert.IsFalse(result, "Two input in args should not be valid");
+            Assert.IsTrue(argumentsInformation.hasErrors, "Two input in args should not be valid");
         }
 
         [TestMethod]
@@ -54,9 +55,9 @@ namespace WorkFrequencyTests
         {
             string[] args = ["-input", "-output", "c:/tmp"];
 
-            bool result = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
 
-            Assert.IsFalse(result, "No input value in args should not be valid");
+            Assert.IsTrue(argumentsInformation.hasErrors, "No input value in args should not be valid");
         }
 
         [TestMethod]
@@ -64,9 +65,9 @@ namespace WorkFrequencyTests
         {
             string[] args = ["-input", "test", "-output", "c:/tmp"];
 
-            bool result = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
 
-            Assert.IsFalse(result, "Incorrect value input in args should not be valid");
+            Assert.IsTrue(argumentsInformation.hasErrors, "Incorrect value input in args should not be valid");
         }
 
         [TestMethod]
@@ -75,9 +76,9 @@ namespace WorkFrequencyTests
 
             string[] args = ["-input", "c:/tmp", "test"];
 
-            bool result = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
 
-            Assert.IsFalse(result, "No output in args should not be valid");
+            Assert.IsTrue(argumentsInformation.hasErrors, "No output in args should not be valid");
         }
 
         [TestMethod]
@@ -86,9 +87,9 @@ namespace WorkFrequencyTests
 
             string[] args = ["-input", "c:/tmp", "-output", "c/tmp2", "-output", "c:/tmp2"];
 
-            bool result = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
 
-            Assert.IsFalse(result, "Two output in args should not be valid");
+            Assert.IsTrue(argumentsInformation.hasErrors, "Two output in args should not be valid");
         }
 
         [TestMethod]
@@ -96,9 +97,9 @@ namespace WorkFrequencyTests
         {
             string[] args = ["-input", "c:/tmp", "-output"];
 
-            bool result = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
 
-            Assert.IsFalse(result, "No output value in args should not be valid");
+            Assert.IsTrue(argumentsInformation.hasErrors, "No output value in args should not be valid");
         }
 
         [TestMethod]
@@ -106,9 +107,9 @@ namespace WorkFrequencyTests
         {
             string[] args = ["-input", "c:/tmp", "-output", "test"];
 
-            bool result = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object);
 
-            Assert.IsFalse(result, "Incorrect value output in args should not be valid");
+            Assert.IsTrue(argumentsInformation.hasErrors, "Incorrect value output in args should not be valid");
         }
 
         [TestMethod]
@@ -129,7 +130,7 @@ namespace WorkFrequencyTests
 
             foreach (string[] args in argsList)
             {
-                Assert.IsTrue(ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object), GetMessage(args));
+                Assert.IsFalse(ArgumentHelper.ValidateCommandLineArguments(args, _logger.Object).hasErrors, GetMessage(args));
             }
         }
     }

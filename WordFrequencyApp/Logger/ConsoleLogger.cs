@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace WordFrequency.Tools;
+namespace WordFrequencyApp.Logger;
 
-public class Logger : ILogger
+public class ConsoleLogger : ILogger
 {
     private const string separator = " | ";
     public void Log(ELogType logType, object message)
