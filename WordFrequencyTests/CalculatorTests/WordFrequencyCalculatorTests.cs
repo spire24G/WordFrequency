@@ -34,7 +34,11 @@ public class WordFrequencyCalculatorTests
     {
         List<string> data = new List<string>
         {
-            "test TEST"
+            "test",
+            "TEST",
+            "Test",
+            "teSt",
+            "tesT",
         };
 
         Dictionary<string, int> frequencies = _wordFrequencyCalculator.FindWordFrequency(data);
@@ -42,7 +46,7 @@ public class WordFrequencyCalculatorTests
         Assert.IsNotNull(frequencies, "Frequencies can not be null");
         Assert.AreEqual(expected: 1, frequencies.Count, "There must be only one element");
         Assert.IsTrue(frequencies.ContainsKey("test"), "The test key must be inside the dictionary");
-        Assert.AreEqual(expected: 2, frequencies["test"], "Test is used twice, no matter the case");
+        Assert.AreEqual(expected: 5, frequencies["test"], "Test is used twice, no matter the case");
     }
 
     [TestMethod]

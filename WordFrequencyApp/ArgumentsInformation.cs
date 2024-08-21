@@ -2,9 +2,7 @@
 
 public class ArgumentsInformation
 {
-    public string InputFilePath { get; set; }
+    public IReadOnlyDictionary<string,string> CommandLineArgument { get; set; }
 
-    public string OutPutFilePath { get; set; }
-
-    public bool hasErrors { get; set; }
+    public bool HasErrors { get; set; }
 }

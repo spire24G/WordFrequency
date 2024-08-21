@@ -23,7 +23,6 @@ public class FileWriter : IWriter
             {
                 foreach (string line in data)
                 {
-                    _logger.Log(ELogType.Debug, $"Write : {line}");
                     sw.WriteLine(line);
                 }
             }

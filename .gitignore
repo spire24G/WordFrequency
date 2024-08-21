@@ -11,3 +11,6 @@
 /WordFrequencyApp/bin/Debug/net8.0
 /WordFrequencyApp/bin/Debug/net8.0/runtimes/win/lib/net6.0/System.Diagnostics.EventLog.dll
 /WordFrequencyApp/obj
+/ressources/output
+/ressources/input/testenglishWord160MB.txt
+/ressources/input/testenglishWord643MB.txt

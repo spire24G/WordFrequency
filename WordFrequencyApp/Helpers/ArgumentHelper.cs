@@ -1,64 +1,53 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Text.RegularExpressions;
 using WordFrequencyApp.Logger;
 
 namespace WordFrequencyApp.Helpers;
 
-public enum EArgumentType
-{
-    Path = 0,
-}
-
 public static class ArgumentHelper
 {
-    public const string Input = "-input";
-    public const string Output = "-output";
+    public const string InputCommandLineArgument = "-input";
+    public const string OutputCommandLineArgument = "-output";
+
+    private static Dictionary<string, string> _commandLineArgumentsWithCorrectFormat = new Dictionary<string, string>
+    {
+        { InputCommandLineArgument, "-input FilePath" },
+        { OutputCommandLineArgument, "-output FilePath" },
+    };
 
     /// <summary>
     /// Validate that arguments contains input and output
     /// </summary>
     /// <param name="args">All command line arguments </param>
-    /// <param name="logger"></param>
-    /// <exception cref="NotImplementedException"></exception>
-    public static ArgumentsInformation ValidateCommandLineArguments(string[] args, ILogger logger)
+    /// <param name="logger">logger to log errors</param>
+    public static ArgumentsInformation GetCommandLineArgumentsInformation(string[] args, ILogger logger)
     {
         if (args.Length == 0)
         {
             logger.Log(ELogType.Error, "Command line args can not be null or empty");
-            return new ArgumentsInformation { hasErrors = true };
+            return new ArgumentsInformation { HasErrors = true };
         }
 
-        if (!CommandLineArgumentsContainsArgument(args, Input))
-        {
-            logger.Log(ELogType.Error, "Command line args must contain one \"-input FilePath\"");
-            return new ArgumentsInformation { hasErrors = true };
-        }
+        Dictionary<string, string> arguments = new Dictionary<string, string>();
 
-        if (!CommandLineArgumentsHasValidArgumentValue(args, Input, EArgumentType.Path, out string inputFilePath))
+        foreach (KeyValuePair<string, string> argumentWithFormat in _commandLineArgumentsWithCorrectFormat)
         {
-            logger.Log(ELogType.Error, "Command line args must contain a valid file path as input file");
-            return new ArgumentsInformation { hasErrors = true };
-        }
-
-        if (!CommandLineArgumentsContainsArgument(args, Output))
-        {
-            logger.Log(ELogType.Error, "Command line args must contain one \"-ouput FilePath\"");
-            return new ArgumentsInformation { hasErrors = true };
-        }
-
-        if (!CommandLineArgumentsHasValidArgumentValue(args, Output, EArgumentType.Path, out string outputFilePath))
-        {
-            logger.Log(ELogType.Error, "Command line args must contain a valid file path as output file");
-            return new ArgumentsInformation { hasErrors = true };
+            if (!TryGetCommandLineArgument(args, argumentWithFormat.Key, out string argumentValue))
+            {
+                logger.Log(ELogType.Error, $"Command line args must contain \"{argumentWithFormat.Value}\" one time");
+                return new ArgumentsInformation { HasErrors = true };
+            }
+            arguments[argumentWithFormat.Key] = argumentValue;
         }
 
         return new ArgumentsInformation
         {
-            InputFilePath = inputFilePath,
-            OutPutFilePath = outputFilePath,
+            CommandLineArgument = arguments,
+            HasErrors = false,
         };
     }
 
-    private static bool CommandLineArgumentsContainsArgument(string[] args, string argument)
+    private static bool CheckArgsContainOnlyOneTimeArgument(string[] args, string argument)
     {
         return Array.FindAll(args, x => x == argument).Length == 1;
     }
@@ -66,43 +55,42 @@ public static class ArgumentHelper
     /// <summary>
     /// Argument must be inside args
     /// </summary>
-    private static bool CommandLineArgumentsHasValidArgumentValue(
+    private static bool TryGetCommandLineArgument(
         string[] args,
         string argument,
-        EArgumentType argumentType,
         out string argumentValue)
     {
         argumentValue = string.Empty;
 
-        int index = Array.IndexOf(args, argument);
-        if (index == -1)
-        {
-            throw new ArgumentException("Argument must be inside args");
-        }
+        if (!CheckArgsContainOnlyOneTimeArgument(args, argument))
+            return false;
 
-        if (index == args.Length - 1)
+        int index = Array.IndexOf(args, argument);
+
+        if (index == args.Length - 1 || index == -1)
             return false;
 
         string nextArg = args[index + 1];
 
-        // TODO 
-        //optimization for maxCPU
-        // found idea for global path //
-        bool isValid = argumentType == EArgumentType.Path
-            ? ValidateGlobalPath(nextArg)
-            : true;
-
-        if (!isValid)
+        if (!CheckValueIsNotArgument(nextArg))
             return false;
-        
+
         argumentValue = nextArg;
         return true;
     }
 
-    private static bool ValidateGlobalPath(string arg)
+    private static bool CheckValueIsNotArgument(string arg)
     {
-        var pattern = @"^[A-Z]:(\\[^\\]+)+\\?$|^/?([^/]+/)+";
-        return Regex.IsMatch(arg, pattern);
+        if (string.IsNullOrEmpty(arg))
+            return false;
+
+        if (arg[0] == '-')
+            return false;
+
+        if (_commandLineArgumentsWithCorrectFormat.ContainsKey(arg))
+            return false;
+
+        return true;
     }
 }
 

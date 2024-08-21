@@ -15,42 +15,45 @@ namespace WordFrequencyApp
             //setup our DI
             ServiceProvider serviceProvider = RegisterService();
 
-            var logger = serviceProvider.GetService<ILogger>();
-            var fileWriter = serviceProvider.GetService<IWriter>();
-            var calculator = serviceProvider.GetService<IWordFrequencyCalculator>();
-
-            logger.Log(ELogType.Information, "Starting application");
-
-            // Display the number of command line arguments.
-            logger.Log(ELogType.Information, $"number of arguments : {args.Length}");
+            ILogger logger = serviceProvider.GetService<ILogger>()!;
+            IWriter fileWriter = serviceProvider.GetService<IWriter>()!;
+            IWordFrequencyCalculator calculator = serviceProvider.GetService<IWordFrequencyCalculator>()!;
 
             try
             {
-                ArgumentsInformation argumentsInformation = ArgumentHelper.ValidateCommandLineArguments(args, logger);
-                if (argumentsInformation.hasErrors)
+                logger.Log(ELogType.Information, "Starting application");
+
+                ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args, logger);
+
+                if (argumentsInformation.HasErrors)
                 {
-                    DisplayResult(isSuccess: false, "Arguments invalid, see the logs for more details");
+                    DisplayResult(isSuccess: false, "Arguments were incorrect");
                     return;
                 }
 
-                string inputPath = argumentsInformation.InputFilePath;
-                string outputPath = argumentsInformation.OutPutFilePath;
+                string inputPath = argumentsInformation.CommandLineArgument[ArgumentHelper.InputCommandLineArgument];
+                string outputPath = argumentsInformation.CommandLineArgument[ArgumentHelper.OutputCommandLineArgument];
+
+                logger.Log(ELogType.Information, $"input path: {inputPath}");
+                logger.Log(ELogType.Information, $"output path: {outputPath}");
 
                 if (!File.Exists(inputPath))
                 {
-                    // TODO display erreur
+                    DisplayResult(isSuccess: false, "Input file does not exist");
+                    return;
                 }
 
-                //if (!Directory.Exists(outputPath))
-                //{
-                //    // TODO display erreur
-                //}
+                if (!Directory.Exists(Path.GetDirectoryName(outputPath)))
+                {
+                    DisplayResult(isSuccess: false, "Output directory does not exist");
+                    return;
+                }
 
                 Encoding? w1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252);
-
                 if (w1252 == null)
                 {
                     DisplayResult(isSuccess: false, "Error while getting the encoding");
+                    return;
                 }
 
                 List<string> allLines = new();
@@ -64,10 +67,10 @@ namespace WordFrequencyApp
                             break;
 
                         allLines.Add(line);
-                        logger.Log(ELogType.Debug, $"Read : {line}");
                     }
                 }
 
+                logger.Log(ELogType.Information, "Computing will start");
                 Dictionary<string, int> frequencies = calculator.FindWordFrequency(allLines);
 
                 IReadOnlyCollection<string> frequenciesToWrite = FrequencyConverter.ConvertFromDictionary(frequencies);
@@ -85,18 +88,17 @@ namespace WordFrequencyApp
                 DisplayResult(isSuccess: false, "Internal error, see the logs for more details");
                 return;
             }
+
             DisplayResult(isSuccess: true);
         }
 
         private static ServiceProvider RegisterService()
         {
-            var serviceProvider = new ServiceCollection()
+            return new ServiceCollection()
                 .AddSingleton<ILogger, ConsoleLogger>()
                 .AddSingleton<IWriter, FileWriter>()
                 .AddSingleton<IWordFrequencyCalculator, WordFrequencyCalculator>()
                 .BuildServiceProvider();
-
-            return serviceProvider;
         }
 
         public static void DisplayResult(bool isSuccess, string? message = null)
