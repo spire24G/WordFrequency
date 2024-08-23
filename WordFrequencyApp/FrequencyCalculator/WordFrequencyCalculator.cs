@@ -8,12 +8,12 @@ public class WordFrequencyCalculator : IWordFrequencyCalculator
     public ConcurrentDictionary<string, int> ComputeDictionaryOfFrequencies(
         ConcurrentDictionary<string, int> allFrequencies,
         IReadOnlyCollection<List<string>> currentAllLines, 
-        int numberOfPackage)
+        int degreeOfParallelism)
     {
         return
             currentAllLines
                 .AsParallel()
-                .WithDegreeOfParallelism(numberOfPackage) // We don't need more threads than the number of Package
+                .WithDegreeOfParallelism(degreeOfParallelism) 
                 .Select(FindWordFrequency)
                 .Aggregate(allFrequencies, (acc, dictionary) =>
                 {

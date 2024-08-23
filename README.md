@@ -9,16 +9,16 @@ https://dotnet.microsoft.com/fr-fr/download/dotnet/8.0
 
 You can either build or build+run the application
 
-To build the console application, you can execute the command line with a CMD in the folder WordFrequencyApp
+To build the console application, you can execute the command line with a CMD in the folder WordFrequencyApp :
 ```cs
 dotnet build WordFrequency.sln
 ```
 
-To build and run the console application, you can execute the command line with a CMD in the folder WordFrequencyApp
+To build and run the console application, you can execute the command line with a CMD in the folder WordFrequencyApp :
 ```cs
 dotnet run InputFilePath OutputFilePath
 ```
-where InputFilePath is the path of the file that you want to read and OutputFilePath is the path of the file that you want to write
+where InputFilePath is the path of the file that you want to read and OutputFilePath is the path of the file that you want to write.
 
 You can use this example :
 ```cs

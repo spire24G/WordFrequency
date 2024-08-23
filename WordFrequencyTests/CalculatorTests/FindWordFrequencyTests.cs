@@ -3,7 +3,7 @@
 namespace WordFrequencyTests.CalculatorTests;
 
 [TestClass]
-public class WordFrequencyCalculatorTests
+public class FindWordFrequencyTests
 {
     private WordFrequencyCalculator _wordFrequencyCalculator = null!;
 

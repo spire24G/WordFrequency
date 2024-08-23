@@ -30,7 +30,7 @@ public class FrequencyReader : IFrequencyReader
         {
             while (sr.Peek() >= 0)
             {
-               
+
                 if (bufferSize < SizeMaxPerDataToAnalyse)
                 {
                     // the buffer is not full, we can continue to read
@@ -48,7 +48,8 @@ public class FrequencyReader : IFrequencyReader
                     if (currentAllLines.Count == numberOfPackageForEachAction)
                     {
                         // We have enough data to compute frequencies
-                        allFrequencies = _wordFrequencyCalculator.ComputeDictionaryOfFrequencies(allFrequencies, currentAllLines, numberOfPackageForEachAction);
+                        // We don't need more threads than the number of Package
+                        allFrequencies = _wordFrequencyCalculator.ComputeDictionaryOfFrequencies(allFrequencies, currentAllLines, degreeOfParallelism: numberOfPackageForEachAction);
                         currentAllLines.Clear();
                     }
                     string? line = sr.ReadLine();
@@ -69,7 +70,8 @@ public class FrequencyReader : IFrequencyReader
         // case where we haven't enough package to compute frequencies at the end of the document
         if (currentAllLines.Count > 0)
         {
-            allFrequencies = _wordFrequencyCalculator.ComputeDictionaryOfFrequencies(allFrequencies, currentAllLines, currentAllLines.Count);
+            // We don't need more threads than the number of Package
+            allFrequencies = _wordFrequencyCalculator.ComputeDictionaryOfFrequencies(allFrequencies, currentAllLines, degreeOfParallelism: currentAllLines.Count);
         }
 
         // Transform dictionary to a list of frequencies sorted in descending order of occurrence
