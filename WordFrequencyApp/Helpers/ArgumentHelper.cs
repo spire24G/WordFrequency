@@ -59,16 +59,15 @@ public static class ArgumentHelper
 
         string extension = Path.GetExtension(outputPath);
 
-        if(string.IsNullOrEmpty(extension))
-            if(Directory.Exists(outputPath))
-                return new ArgumentsInformation
-                {
-                    ErrorMessage = OutputPathIsAlreadyADirectory,
-                };
+        if(string.IsNullOrEmpty(extension) && Directory.Exists(outputPath))
+            return new ArgumentsInformation
+            {
+                ErrorMessage = OutputPathIsAlreadyADirectory,
+            };
 
         string? directoryName = Path.GetDirectoryName(outputPath);
-
-        if (!Directory.Exists(directoryName))
+        
+        if(!string.IsNullOrEmpty(directoryName ) && !Directory.Exists(directoryName))
         {
             return new ArgumentsInformation
             {
