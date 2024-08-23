@@ -1,11 +1,11 @@
-﻿using WordFrequencyApp.Calculator;
+﻿using WordFrequencyApp.FrequencyCalculator;
 
 namespace WordFrequencyTests.CalculatorTests;
 
 [TestClass]
 public class WordFrequencyCalculatorTests
 {
-    private IWordFrequencyCalculator _wordFrequencyCalculator;
+    private WordFrequencyCalculator _wordFrequencyCalculator = null!;
 
     [TestInitialize]
     public void Init()

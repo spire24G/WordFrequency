@@ -1,96 +1,84 @@
-﻿using System.ComponentModel;
-using System.Text.RegularExpressions;
-using WordFrequencyApp.Logger;
-
-namespace WordFrequencyApp.Helpers;
+﻿namespace WordFrequencyApp.Helpers;
 
 public static class ArgumentHelper
 {
-    public const string InputCommandLineArgument = "-input";
-    public const string OutputCommandLineArgument = "-output";
-
-    private static Dictionary<string, string> _commandLineArgumentsWithCorrectFormat = new Dictionary<string, string>
-    {
-        { InputCommandLineArgument, "-input FilePath" },
-        { OutputCommandLineArgument, "-output FilePath" },
-    };
+    internal const string NeedTwoArguments = "They must have two command line arguments";
+    internal const string InputIncorrectCharacters = "Input file has incorrect characters";
+    internal const string OutputIncorrectCharacters = "Output file has incorrect characters";
+    internal const string InputFileNotExist = "Input file does not exist";
+    internal const string OutputDirectoryNotExist = "Output file's directory does not exist";
+    internal const string OutputPathIsAlreadyADirectory = "Output file path is an existing directory";
 
     /// <summary>
     /// Validate that arguments contains input and output
     /// </summary>
     /// <param name="args">All command line arguments </param>
-    /// <param name="logger">logger to log errors</param>
-    public static ArgumentsInformation GetCommandLineArgumentsInformation(string[] args, ILogger logger)
+    public static ArgumentsInformation GetCommandLineArgumentsInformation(string[] args)
     {
-        if (args.Length == 0)
+        if (args.Length != 2)
         {
-            logger.Log(ELogType.Error, "Command line args can not be null or empty");
-            return new ArgumentsInformation { HasErrors = true };
+            return new ArgumentsInformation
+            {
+                ErrorMessage = NeedTwoArguments
+            };
         }
 
-        Dictionary<string, string> arguments = new Dictionary<string, string>();
+        string inputPath = args[0];
+        string outputPath = args[1];
 
-        foreach (KeyValuePair<string, string> argumentWithFormat in _commandLineArgumentsWithCorrectFormat)
+        string inputFileName = Path.GetFileName(inputPath);
+        string outputFileName = Path.GetFileName(outputPath);
+
+        if (inputPath.IndexOfAny(Path.GetInvalidPathChars()) != -1
+            || inputFileName.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
         {
-            if (!TryGetCommandLineArgument(args, argumentWithFormat.Key, out string argumentValue))
+            return new ArgumentsInformation
             {
-                logger.Log(ELogType.Error, $"Command line args must contain \"{argumentWithFormat.Value}\" one time");
-                return new ArgumentsInformation { HasErrors = true };
-            }
-            arguments[argumentWithFormat.Key] = argumentValue;
+                ErrorMessage = InputIncorrectCharacters,
+            };
+        }
+
+        if (!File.Exists(inputPath))
+        {
+            return new ArgumentsInformation
+            {
+                ErrorMessage = InputFileNotExist,
+            };
+        }
+
+        if (outputPath.IndexOfAny(Path.GetInvalidPathChars()) != -1
+            || outputFileName.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+        {
+            return new ArgumentsInformation
+            {
+                ErrorMessage = OutputIncorrectCharacters,
+            };
+        }
+
+        var extension = Path.GetExtension(outputPath);
+
+        if(string.IsNullOrEmpty(extension))
+            if(Directory.Exists(outputPath))
+                return new ArgumentsInformation
+                {
+                    ErrorMessage = OutputPathIsAlreadyADirectory,
+                };
+
+        string? directoryName = Path.GetDirectoryName(outputPath);
+
+        if (!Directory.Exists(directoryName))
+        {
+            return new ArgumentsInformation
+            {
+                ErrorMessage = OutputDirectoryNotExist,
+            };
         }
 
         return new ArgumentsInformation
         {
-            CommandLineArgument = arguments,
-            HasErrors = false,
+            InputPath = inputPath,
+            OutputPath = outputPath,
         };
-    }
-
-    private static bool CheckArgsContainOnlyOneTimeArgument(string[] args, string argument)
-    {
-        return Array.FindAll(args, x => x == argument).Length == 1;
-    }
-
-    /// <summary>
-    /// Argument must be inside args
-    /// </summary>
-    private static bool TryGetCommandLineArgument(
-        string[] args,
-        string argument,
-        out string argumentValue)
-    {
-        argumentValue = string.Empty;
-
-        if (!CheckArgsContainOnlyOneTimeArgument(args, argument))
-            return false;
-
-        int index = Array.IndexOf(args, argument);
-
-        if (index == args.Length - 1 || index == -1)
-            return false;
-
-        string nextArg = args[index + 1];
-
-        if (!CheckValueIsNotArgument(nextArg))
-            return false;
-
-        argumentValue = nextArg;
-        return true;
-    }
-
-    private static bool CheckValueIsNotArgument(string arg)
-    {
-        if (string.IsNullOrEmpty(arg))
-            return false;
-
-        if (arg[0] == '-')
-            return false;
-
-        if (_commandLineArgumentsWithCorrectFormat.ContainsKey(arg))
-            return false;
-
-        return true;
     }
 }
 

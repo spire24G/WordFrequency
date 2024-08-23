@@ -1,8 +1,10 @@
-﻿namespace WordFrequencyApp.Converter;
+﻿using System.Collections.Concurrent;
+
+namespace WordFrequencyApp.Converter;
 
 public static class FrequencyConverter
 {
-    public static IReadOnlyCollection<string> ConvertFromDictionary(Dictionary<string, int> data)
+    public static IReadOnlyCollection<string> ConvertFromDictionary(ConcurrentDictionary<string, int> data)
     {
         List<string> result = new List<string>();
 
@@ -10,7 +12,7 @@ public static class FrequencyConverter
         {
             KeyValuePair<string, int> keyAndValue = data.MaxBy(x => x.Value);
             result.Add(GetMessage(keyAndValue.Key, keyAndValue.Value));
-            data.Remove(keyAndValue.Key);
+            data.Remove(keyAndValue.Key, out _);
         }
 
         return result;

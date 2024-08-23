@@ -1,8 +1,28 @@
-﻿namespace WordFrequencyApp.Calculator;
+﻿using System.Collections.Concurrent;
+using WordFrequencyApp.Helpers;
+
+namespace WordFrequencyApp.FrequencyCalculator;
 
 public class WordFrequencyCalculator : IWordFrequencyCalculator
 {
-    public Dictionary<string, int> FindWordFrequency(IReadOnlyCollection<string> data)
+    public ConcurrentDictionary<string, int> ComputeDictionaryOfFrequencies(
+        ConcurrentDictionary<string, int> allFrequencies,
+        IReadOnlyCollection<List<string>> currentAllLines, 
+        int numberOfPackage)
+    {
+        return
+            currentAllLines
+                .AsParallel()
+                .WithDegreeOfParallelism(numberOfPackage) // We don't need more threads than the number of Package
+                .Select(FindWordFrequency)
+                .Aggregate(allFrequencies, (acc, dictionary) =>
+                {
+                    DictionaryHelper.MergeDictionaries(acc, dictionary);
+                    return acc;
+                });
+    }
+
+    internal Dictionary<string, int> FindWordFrequency(IReadOnlyCollection<string> data)
     {
         Dictionary<string, int> result = new Dictionary<string, int>(new StringIgnoreCaseComparer());
 
@@ -27,7 +47,7 @@ public class WordFrequencyCalculator : IWordFrequencyCalculator
             if (x == null) return false;
             if (y == null) return false;
 
-            return x.Equals(y,StringComparison.InvariantCultureIgnoreCase);
+            return x.Equals(y, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public int GetHashCode(string obj)

@@ -1,117 +1,168 @@
-using Moq;
 using WordFrequencyApp;
 using WordFrequencyApp.Helpers;
-using WordFrequencyApp.Logger;
 
 namespace WordFrequencyTests.HelpersTest
 {
     [TestClass]
     public class ArgumentHelperTests
     {
-        private Mock<ILogger> _logger;
-
-        [TestInitialize]
-        public void Init()
-        {
-            _logger = new Mock<ILogger>();
-            _logger.Setup(x => x.Log(It.IsAny<ELogType>(), It.IsAny<object>()));
-        }
-
-
         [TestMethod]
         public void TestFailWhenEmptyArgs()
         {
             string[] args = [];
 
-            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.IsTrue(argumentsInformation.HasErrors, "Empty args should not be valid");
+
+            Assert.AreEqual(ArgumentHelper.NeedTwoArguments, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
-        public void TestFailWhenInputArgMissing()
+        public void TestFailWhenOnlyOneArgument()
         {
 
-            string[] args = ["test", "-output", "c:/tmp"];
+            string[] args = ["c:/tmp"];
 
-            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.IsTrue(argumentsInformation.HasErrors, "No input in args should not be valid");
+            Assert.AreEqual(ArgumentHelper.NeedTwoArguments, argumentsInformation.ErrorMessage);
+
         }
 
         [TestMethod]
-        public void TestFailWhenTooMuchInputArg()
+        public void TestFailWhenTooMuchArg()
         {
 
-            string[] args = ["-input", "c:/tmp", "-input", "c/tmp2", "-output", "c:/tmp"];
+            string[] args = ["c:/tmp", "c/tmp2", "c:/tmp3"];
 
-            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.IsTrue(argumentsInformation.HasErrors, "Two input in args should not be valid");
+            Assert.AreEqual(ArgumentHelper.NeedTwoArguments, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
-        public void TestFailWhenInputValueMissing()
+        public void TestFailWhenInputArgUnknown()
         {
-            string[] args = ["-input", "-output", "c:/tmp"];
 
-            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args, _logger.Object);
+            string[] args = ["./error.txt", "."];
 
-            Assert.IsTrue(argumentsInformation.HasErrors, "No input value in args should not be valid");
+            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
+
+            Assert.AreEqual(ArgumentHelper.InputFileNotExist, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
-        public void TestFailWhenOutputArgMissing()
+        public void TestFailWhenInputArgIsFolder()
         {
 
-            string[] args = ["-input", "c:/tmp", "test"];
+            string[] args = [Directory.GetCurrentDirectory(), "."];
 
-            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.IsTrue(argumentsInformation.HasErrors, "No output in args should not be valid");
+            Assert.AreEqual(ArgumentHelper.InputFileNotExist, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
-        public void TestFailWhenTooMuchOutputArg()
+        public void TestFailWhenInputArgTooLong()
         {
 
-            string[] args = ["-input", "c:/tmp", "-output", "c/tmp2", "-output", "c:/tmp2"];
+            string[] args = ["./errorerrorerrorerrorerrorerrorerrorerrorerrorerrorerrorerror" +
+                             "errorerrorerrorerrorerrorerrorerrorerror" +
+                             "errorerrorerrorerrorerrorerrorerrorerror" +
+                             "errorerrorerrorerrorerrorerrorerrorerror" +
+                             "errorerrorerrorerrorerrorerror.txt", "."];
 
-            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args, _logger.Object);
+            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.IsTrue(argumentsInformation.HasErrors, "Two output in args should not be valid");
+            Assert.AreEqual(ArgumentHelper.InputFileNotExist, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
-        public void TestFailWhenOutputValueMissing()
+        public void TestFailWhenInputContainsUnacceptableCharacter()
         {
-            string[] args = ["-input", "c:/tmp", "-output"];
+            const string message = "Incorrect value in input or ouput args should not be valid : ";
 
-            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args, _logger.Object);
+            string inputPath = Path.GetTempFileName();
+            string currentDirectoryPath = Directory.GetCurrentDirectory();
+            string[][] argsList =
+                [[currentDirectoryPath + "\\<test.txt", ".\\test.txt"],
+                [currentDirectoryPath + "\\>test.txt", ".\\test.txt"],
+                [currentDirectoryPath + "\\:test.txt", ".\\test.txt"],
+                [currentDirectoryPath + "\\|test.txt", ".\\test.txt"],
+                [currentDirectoryPath + "\\?test.txt", ".\\test.txt"],
+                [currentDirectoryPath + "\\*test.txt", ".\\test.txt"]];
 
-            Assert.IsTrue(argumentsInformation.HasErrors, "No output value in args should not be valid");
+            AssertGetCommandLineArgumentsInformation(argsList, ArgumentHelper.InputIncorrectCharacters, message);
+
+            argsList =
+                [[inputPath, ".\\<test.txt"],
+                [inputPath, ".\\>test.txt"],
+                [inputPath, ".\\:test.txt"],
+                [inputPath, ".\\|test.txt"],
+                [inputPath, ".\\?test.txt"],
+                [inputPath, ".\\*test.txt"]];
+            AssertGetCommandLineArgumentsInformation(argsList, ArgumentHelper.OutputIncorrectCharacters, message);
+
+        }
+
+        [TestMethod]
+        public void TestFailWhenOutputArgUnknown()
+        {
+
+            string[] args = [Path.GetTempFileName(), "c:/unknownFolder/test.txt"];
+
+            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
+
+            Assert.AreEqual(ArgumentHelper.OutputDirectoryNotExist, argumentsInformation.ErrorMessage);
+        }
+
+        [TestMethod]
+        public void TestFailWhenOutputArgIsUnknownFolder()
+        {
+
+            string[] args = [Path.GetTempFileName(), Directory.GetCurrentDirectory() + "\\unknown\\"];
+
+            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
+
+            Assert.AreEqual(ArgumentHelper.OutputDirectoryNotExist, argumentsInformation.ErrorMessage);
+        }
+
+        [TestMethod]
+        public void TestFailWhenOutputArgIsKnownFolder()
+        {
+
+            string[] args = [Path.GetTempFileName(), "..\\"];
+
+            ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
+
+            Assert.AreEqual(ArgumentHelper.OutputPathIsAlreadyADirectory, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
         public void TestSuccessWhenInputAndOutputCorrectGlobalValue()
         {
-            const string message = "Correct global value input and ouput in args should be valid : ";
+            const string message = "Correct value input and ouput in args should be valid : ";
 
-            string GetMessage(string[] args)
-            {
-                return $"{message} {string.Join(" ", args)}";
-            }
-
+            string inputPath = Path.GetTempFileName();
+            string currentDirectoryPath = Directory.GetCurrentDirectory();
             string[][] argsList =
-                [["-input", "c:/tmp/text.txt", "-output", "c:/tmp/text.txt"],
-                 ["-input", "/tmp/text.txt", "-output", "/tmp/text.txt"],
-                 ["-input", "/tmp/subtmp/text.txt", "-output", "/tmp/subtmp/text.txt"],
-                 ["-input", "d:/tmp/text.txt", "-output", "d:/tmp/text.txt"]];
+                [[inputPath, ".\\test.txt"],
+                [inputPath, currentDirectoryPath + "\\test.txt"]];
 
+            AssertGetCommandLineArgumentsInformation(argsList, string.Empty, message);
+        }
+
+        private void AssertGetCommandLineArgumentsInformation(string[][] argsList, string expectedErrorMessage, string message)
+        {
             foreach (string[] args in argsList)
             {
-                Assert.IsFalse(ArgumentHelper.GetCommandLineArgumentsInformation(args, _logger.Object).HasErrors, GetMessage(args));
+                Assert.AreEqual(expectedErrorMessage, ArgumentHelper.GetCommandLineArgumentsInformation(args).ErrorMessage, ConcatArgsAndMessage(args, message));
             }
+        }
+
+        private string ConcatArgsAndMessage(string[] args, string message)
+        {
+            return $"{message} {string.Join(" ", args)}";
         }
     }
 }

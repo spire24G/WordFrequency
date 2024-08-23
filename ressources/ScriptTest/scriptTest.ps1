@@ -6,7 +6,7 @@ $varPathOutput = "../output"
 $MonFolder = Get-ChildItem -Path $varPathInput -File | Where-Object {$_.Name -match 'txt$'} 
 foreach ($MyFile in $MonFolder)
 {
-	& $varPathExe -input $($MyFile.FullName) -output "$varPathOutput/$($MyFile.Basename)result.txt"
+	& $varPathExe $($MyFile.FullName) "$varPathOutput/$($MyFile.Basename)result.txt"
 }
 
 

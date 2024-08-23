@@ -2,7 +2,9 @@
 
 public class ArgumentsInformation
 {
-    public IReadOnlyDictionary<string,string> CommandLineArgument { get; set; }
+    public string InputPath { get; set; } = string.Empty;
 
-    public bool HasErrors { get; set; }
+    public string OutputPath { get; set; } = string.Empty;
+
+    public string ErrorMessage { get; set; } = string.Empty;
 }

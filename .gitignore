@@ -14,3 +14,6 @@
 /ressources/output
 /ressources/input/testenglishWord160MB.txt
 /ressources/input/testenglishWord643MB.txt
+/WordFrequencyTests/bin/Release/net8.0
+/WordFrequencyApp/bin/Release/net8.0
+/ressources/input - example
