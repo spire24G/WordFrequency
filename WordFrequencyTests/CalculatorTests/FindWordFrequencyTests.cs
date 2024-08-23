@@ -16,70 +16,67 @@ public class FindWordFrequencyTests
     [TestMethod]
     public void TestSameWordMatch()
     {
-        List<string> data = new List<string>
-        {
-            "test test"
-        };
+        List<string> data = ["test test"];
 
         Dictionary<string, int> frequencies = _wordFrequencyCalculator.FindWordFrequency(data);
 
         Assert.IsNotNull(frequencies, "Frequencies can not be null");
         Assert.AreEqual(expected: 1, frequencies.Count, "There must be only one element");
-        Assert.IsTrue(frequencies.ContainsKey("test"), "The test key must be inside the dictionary");
+        Assert.IsTrue(frequencies.ContainsKey("test"), "The key named test must be inside the dictionary");
         Assert.AreEqual(expected: 2, frequencies["test"], "Test is used twice");
     }
 
     [TestMethod]
     public void TestSameWordMatchWithDifferentCaseMatch()
     {
-        List<string> data = new List<string>
-        {
+        List<string> data =
+        [
             "test",
             "TEST",
             "Test",
             "teSt",
-            "tesT",
-        };
+            "tesT"
+        ];
 
         Dictionary<string, int> frequencies = _wordFrequencyCalculator.FindWordFrequency(data);
 
         Assert.IsNotNull(frequencies, "Frequencies can not be null");
         Assert.AreEqual(expected: 1, frequencies.Count, "There must be only one element");
-        Assert.IsTrue(frequencies.ContainsKey("test"), "The test key must be inside the dictionary");
+        Assert.IsTrue(frequencies.ContainsKey("test"), "The key named test must be inside the dictionary");
         Assert.AreEqual(expected: 5, frequencies["test"], "Test is used twice, no matter the case");
     }
 
     [TestMethod]
     public void TestSameWordMatchOnDifferentLineMatch()
     {
-        List<string> data = new List<string>
-        {
+        List<string> data =
+        [
             "test",
             "test"
-        };
+        ];
 
         Dictionary<string, int> frequencies = _wordFrequencyCalculator.FindWordFrequency(data);
 
         Assert.IsNotNull(frequencies, "Frequencies can not be null");
         Assert.AreEqual(expected: 1, frequencies.Count, "There must be only one element");
-        Assert.IsTrue(frequencies.ContainsKey("test"), "The test key must be inside the dictionary");
-        Assert.AreEqual(expected: 2, frequencies["test"], "Test is used twice, no matter the line");
+        Assert.IsTrue(frequencies.ContainsKey("test"), "The key named test must be inside the dictionary");
+        Assert.AreEqual(expected: 2, frequencies["test"], "Test is used twice, no matter the lines");
     }
 
     [TestMethod]
     public void TestMultipleSpacesNotUsedAsWord()
     {
-        List<string> data = new List<string>
-        {
+        List<string> data =
+        [
             "test     test",
             "test   "
-        };
+        ];
 
         Dictionary<string, int> frequencies = _wordFrequencyCalculator.FindWordFrequency(data);
 
         Assert.IsNotNull(frequencies, "Frequencies can not be null");
         Assert.AreEqual(expected: 1, frequencies.Count, "There must be only one element");
-        Assert.IsTrue(frequencies.ContainsKey("test"), "The test key must be inside the dictionary");
-        Assert.AreEqual(expected: 3, frequencies["test"], "Test is used twice, no matter the spaces");
+        Assert.IsTrue(frequencies.ContainsKey("test"), "The key named test must be inside the dictionary");
+        Assert.AreEqual(expected: 3, frequencies["test"], "Test is used three times, no matter the spaces and the lines");
     }
 }

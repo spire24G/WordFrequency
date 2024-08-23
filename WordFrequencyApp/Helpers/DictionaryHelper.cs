@@ -15,12 +15,12 @@ public static class DictionaryHelper
         if (baseDictionary == null)
             throw new ArgumentNullException(nameof(baseDictionary));
 
-        if(dictionaryToMerge == null)
+        if (dictionaryToMerge == null)
             return;
 
         foreach (KeyValuePair<string, int> keyValuePair in dictionaryToMerge)
         {
-                baseDictionary.AddOrUpdate(keyValuePair.Key, s => keyValuePair.Value, (s, i) => keyValuePair.Value+i );
+            baseDictionary.AddOrUpdate(keyValuePair.Key, s => keyValuePair.Value, (s, i) => keyValuePair.Value + i);
         }
     }
 }

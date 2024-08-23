@@ -2,6 +2,7 @@
 using WordFrequencyApp.FrequencyCalculator;
 using WordFrequencyApp.Helpers;
 using WordFrequencyApp.Logger;
+using WordFrequencyApp.Models;
 using WordFrequencyApp.Reader;
 using WordFrequencyApp.Writer;
 
@@ -25,6 +26,7 @@ namespace WordFrequencyApp
                 //Validate and get arguments information
                 ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
+                //Display error message if invalid args
                 if (!string.IsNullOrEmpty(argumentsInformation.ErrorMessage))
                 {
                     DisplayResult(isSuccess: false, argumentsInformation.ErrorMessage);
@@ -35,10 +37,22 @@ namespace WordFrequencyApp
                 logger.Log(ELogType.Information, $"output path: {argumentsInformation.OutputPath}");
 
                 // Read data and compute frequencies
-                IReadOnlyCollection<string> frequenciesToWrite = frequencyReader.ReadAndComputeFrequencies(argumentsInformation.InputPath);
+                bool resultReading = 
+                    frequencyReader.TryReadAndComputeFrequencies(
+                        argumentsInformation.InputPath, 
+                        out IReadOnlyCollection<string> frequenciesToWrite);
+
+                // Display error if frequencies is null, because we only have null in the catch part
+                if (!resultReading)
+                {
+                    DisplayResult(isSuccess: false, "Reading input file failed, see the logs for more details");
+                    return;
+                }
 
                 // Write frequencies in file
                 bool resultWriting = fileWriter.WriteData(frequenciesToWrite, argumentsInformation.OutputPath);
+
+                // Display error if writing was not a success
                 if (!resultWriting)
                 {
                     DisplayResult(isSuccess: false, "Writing in output file failed, see the logs for more details");
@@ -52,11 +66,10 @@ namespace WordFrequencyApp
                 return;
             }
 
-            logger.Log(ELogType.Information,"Done!");
             DisplayResult(isSuccess: true);
         }
 
-       
+
 
         private static ServiceProvider RegisterService()
         {
@@ -73,17 +86,15 @@ namespace WordFrequencyApp
             if (isSuccess)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-
                 Console.WriteLine($"SUCCESS!");
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-
-                if (string.IsNullOrEmpty(message))
-                    Console.WriteLine("FAILURE!");
-                else
-                    Console.WriteLine($"FAILURE! {message}");
+                Console.WriteLine(
+                    string.IsNullOrEmpty(message) 
+                        ? "FAILURE!" 
+                        : $"FAILURE! {message}");
             }
 
             Console.ResetColor();

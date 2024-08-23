@@ -1,4 +1,6 @@
-﻿namespace WordFrequencyApp.Helpers;
+﻿using WordFrequencyApp.Models;
+
+namespace WordFrequencyApp.Helpers;
 
 public static class ArgumentHelper
 {
@@ -55,7 +57,7 @@ public static class ArgumentHelper
             };
         }
 
-        var extension = Path.GetExtension(outputPath);
+        string extension = Path.GetExtension(outputPath);
 
         if(string.IsNullOrEmpty(extension))
             if(Directory.Exists(outputPath))

@@ -1,4 +1,4 @@
-﻿namespace WordFrequencyApp;
+﻿namespace WordFrequencyApp.Models;
 
 public class ArgumentsInformation
 {

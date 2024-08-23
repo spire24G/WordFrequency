@@ -10,7 +10,6 @@ public class ConvertFromDictionaryTests
     public void TestEmptyData()
     {
         ConcurrentDictionary<string, int> data = new();
-      
 
         IReadOnlyCollection<string> result = FrequencyConverter.ConvertFromDictionary(data);
 

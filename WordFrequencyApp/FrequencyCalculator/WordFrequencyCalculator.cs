@@ -24,7 +24,7 @@ public class WordFrequencyCalculator : IWordFrequencyCalculator
 
     internal Dictionary<string, int> FindWordFrequency(IReadOnlyCollection<string> data)
     {
-        Dictionary<string, int> result = new Dictionary<string, int>(new StringIgnoreCaseComparer());
+        Dictionary<string, int> result = new(new StringIgnoreCaseComparer());
 
         foreach (string line in data)
         {

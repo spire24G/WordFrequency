@@ -8,7 +8,7 @@ public class ComputeDictionaryOfFrequenciesTests
 {
 
     private WordFrequencyCalculator _wordFrequencyCalculator = null!;
-    private ConcurrentDictionary<string, int> _frequencies = new ConcurrentDictionary<string, int>();
+    private ConcurrentDictionary<string, int> _frequencies = new();
     private const int DegreeOfParallelism = 2;
 
     [TestInitialize]
@@ -20,7 +20,7 @@ public class ComputeDictionaryOfFrequenciesTests
     [TestMethod]
     public void TestEmptyDataWorks()
     {
-        List<List<string>> data = new List<List<string>>();
+        List<List<string>> data = [];
 
         ConcurrentDictionary<string, int> result = _wordFrequencyCalculator.ComputeDictionaryOfFrequencies(_frequencies, data, DegreeOfParallelism);
 
@@ -31,10 +31,7 @@ public class ComputeDictionaryOfFrequenciesTests
     [TestMethod]
     public void TestOneLineInOnePackageDataWorks()
     {
-        List<List<string>> data = new List<List<string>>
-        {
-            new List<string>{ "Hello World"}
-        };
+        List<List<string>> data = [["Hello World"]];
 
         ConcurrentDictionary<string, int> result = _wordFrequencyCalculator.ComputeDictionaryOfFrequencies(_frequencies, data, DegreeOfParallelism);
 
@@ -45,14 +42,13 @@ public class ComputeDictionaryOfFrequenciesTests
     [TestMethod]
     public void TestTwoLineInOnePackageDataWorks()
     {
-        List<List<string>> data = new List<List<string>>
-        {
-            new List<string>
-            {
+        List<List<string>> data =
+        [
+            [
                 "Hello",
                 "World"
-            }
-        };
+            ]
+        ];
 
         ConcurrentDictionary<string, int> result = _wordFrequencyCalculator.ComputeDictionaryOfFrequencies(_frequencies, data, DegreeOfParallelism);
 
@@ -63,17 +59,16 @@ public class ComputeDictionaryOfFrequenciesTests
     [TestMethod]
     public void TestOneLineInTwoPackageDataWorks()
     {
-        List<List<string>> data = new List<List<string>>
-        {
-            new List<string>
-            {
-                "Hello World",
-            },
-            new List<string>
-            {
-                "Hello2 World2",
-            }
-        };
+        List<List<string>> data =
+        [
+            [
+                "Hello World"
+            ],
+
+            [
+                "Hello2 World2"
+            ]
+        ];
 
         ConcurrentDictionary<string, int> result = _wordFrequencyCalculator.ComputeDictionaryOfFrequencies(_frequencies, data, DegreeOfParallelism);
 
@@ -84,19 +79,18 @@ public class ComputeDictionaryOfFrequenciesTests
     [TestMethod]
     public void TestTwoLineInTwoPackageDataWorks()
     {
-        List<List<string>> data = new List<List<string>>
-        {
-            new List<string>
-            {
+        List<List<string>> data =
+        [
+            [
                 "Hello",
                 "World"
-            },
-            new List<string>
-            {
+            ],
+
+            [
                 "Hello2",
                 "World2"
-            }
-        };
+            ]
+        ];
 
         ConcurrentDictionary<string, int> result = _wordFrequencyCalculator.ComputeDictionaryOfFrequencies(_frequencies, data, DegreeOfParallelism);
 

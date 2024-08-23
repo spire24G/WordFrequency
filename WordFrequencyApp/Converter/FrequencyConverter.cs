@@ -6,19 +6,19 @@ public static class FrequencyConverter
 {
     public static IReadOnlyCollection<string> ConvertFromDictionary(ConcurrentDictionary<string, int> data)
     {
-        List<string> result = new List<string>();
+        List<string> result = new();
 
-        while (data.Count > 0)
+        while (!data.IsEmpty)
         {
             KeyValuePair<string, int> keyAndValue = data.MaxBy(x => x.Value);
-            result.Add(GetMessage(keyAndValue.Key, keyAndValue.Value));
+            result.Add(GetOutputMessage(keyAndValue.Key, keyAndValue.Value));
             data.Remove(keyAndValue.Key, out _);
         }
 
         return result;
     }
 
-    private static string GetMessage(string key, int value)
+    private static string GetOutputMessage(string key, int value)
     {
         return $"{key},{value}";
     }

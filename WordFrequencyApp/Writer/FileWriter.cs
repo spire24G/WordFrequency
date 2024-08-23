@@ -4,7 +4,7 @@ using ILogger = WordFrequencyApp.Logger.ILogger;
 
 namespace WordFrequencyApp.Writer;
 
-public class FileWriter : IWriter   
+public class FileWriter : IWriter
 {
     private readonly ILogger _logger;
     private readonly Encoding _encoding;
@@ -12,7 +12,7 @@ public class FileWriter : IWriter
     public FileWriter(ILogger logger)
     {
         _logger = logger;
-        _encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252) 
+        _encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252)
                     ?? throw new ApplicationException("Error while getting Windows-1252 Encoding");
     }
     public bool WriteData(IReadOnlyCollection<string> data, string outputPath)

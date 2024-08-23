@@ -2,5 +2,6 @@
 
 public interface IFrequencyReader
 {
-    IReadOnlyCollection<string> ReadAndComputeFrequencies(string fileNamePath);
+    bool TryReadAndComputeFrequencies(string fileNamePath,
+        out IReadOnlyCollection<string> readOnlyCollection);
 }

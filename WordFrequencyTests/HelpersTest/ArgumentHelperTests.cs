@@ -1,5 +1,5 @@
-using WordFrequencyApp;
 using WordFrequencyApp.Helpers;
+using WordFrequencyApp.Models;
 
 namespace WordFrequencyTests.HelpersTest
 {
@@ -80,7 +80,7 @@ namespace WordFrequencyTests.HelpersTest
         [TestMethod]
         public void TestFailWhenInputContainsUnacceptableCharacter()
         {
-            const string message = "Incorrect value in input or ouput args should not be valid : ";
+            const string message = "Incorrect value in input or output args should not be valid: ";
 
             string inputPath = Path.GetTempFileName();
             string currentDirectoryPath = Directory.GetCurrentDirectory();
@@ -120,7 +120,7 @@ namespace WordFrequencyTests.HelpersTest
         public void TestFailWhenOutputArgIsUnknownFolder()
         {
 
-            string[] args = [Path.GetTempFileName(), Directory.GetCurrentDirectory() + "\\unknown\\"];
+            string[] args = [Path.GetTempFileName(), Directory.GetCurrentDirectory() + @"\unknown\"];
 
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
@@ -152,7 +152,7 @@ namespace WordFrequencyTests.HelpersTest
             AssertGetCommandLineArgumentsInformation(argsList, string.Empty, message);
         }
 
-        private void AssertGetCommandLineArgumentsInformation(string[][] argsList, string expectedErrorMessage, string message)
+        private static void AssertGetCommandLineArgumentsInformation(string[][] argsList, string expectedErrorMessage, string message)
         {
             foreach (string[] args in argsList)
             {
@@ -160,7 +160,7 @@ namespace WordFrequencyTests.HelpersTest
             }
         }
 
-        private string ConcatArgsAndMessage(string[] args, string message)
+        private static string ConcatArgsAndMessage(string[] args, string message)
         {
             return $"{message} {string.Join(" ", args)}";
         }

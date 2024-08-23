@@ -22,7 +22,7 @@ where InputFilePath is the path of the file that you want to read and OutputFile
 
 You can use this example :
 ```cs
-dotnet run ..\ressources\input\hello.txt ..\ressources\result.txt
+dotnet run ..\resources\input\hello.txt ..\resources\result.txt
 ```
 
 ## How to use 
