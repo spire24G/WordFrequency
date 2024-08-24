@@ -1,4 +1,5 @@
 using WordFrequencyApp.Helpers;
+using WordFrequencyApp.Localisation;
 using WordFrequencyApp.Models;
 
 namespace WordFrequencyTests.HelpersTest
@@ -14,7 +15,7 @@ namespace WordFrequencyTests.HelpersTest
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
 
-            Assert.AreEqual(ArgumentHelper.NeedTwoArguments, argumentsInformation.ErrorMessage);
+            Assert.AreEqual(Language.NeedTwoArguments, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
@@ -25,7 +26,7 @@ namespace WordFrequencyTests.HelpersTest
 
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.AreEqual(ArgumentHelper.NeedTwoArguments, argumentsInformation.ErrorMessage);
+            Assert.AreEqual(Language.NeedTwoArguments, argumentsInformation.ErrorMessage);
 
         }
 
@@ -37,7 +38,7 @@ namespace WordFrequencyTests.HelpersTest
 
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.AreEqual(ArgumentHelper.NeedTwoArguments, argumentsInformation.ErrorMessage);
+            Assert.AreEqual(Language.NeedTwoArguments, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
@@ -48,7 +49,7 @@ namespace WordFrequencyTests.HelpersTest
 
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.AreEqual(ArgumentHelper.InputFileNotExist, argumentsInformation.ErrorMessage);
+            Assert.AreEqual(Language.InputFileNotExist, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
@@ -59,7 +60,7 @@ namespace WordFrequencyTests.HelpersTest
 
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.AreEqual(ArgumentHelper.InputFileNotExist, argumentsInformation.ErrorMessage);
+            Assert.AreEqual(Language.InputFileNotExist, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
@@ -74,7 +75,7 @@ namespace WordFrequencyTests.HelpersTest
 
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.AreEqual(ArgumentHelper.InputFileNotExist, argumentsInformation.ErrorMessage);
+            Assert.AreEqual(Language.InputFileNotExist, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
@@ -92,7 +93,7 @@ namespace WordFrequencyTests.HelpersTest
                 [currentDirectoryPath + "\\?test.txt", ".\\test.txt"],
                 [currentDirectoryPath + "\\*test.txt", ".\\test.txt"]];
 
-            AssertGetCommandLineArgumentsInformation(argsList, ArgumentHelper.InputIncorrectCharacters, message);
+            AssertGetCommandLineArgumentsInformation(argsList, Language.InputIncorrectCharacters, message);
 
             argsList =
                 [[inputPath, ".\\<test.txt"],
@@ -101,7 +102,7 @@ namespace WordFrequencyTests.HelpersTest
                 [inputPath, ".\\|test.txt"],
                 [inputPath, ".\\?test.txt"],
                 [inputPath, ".\\*test.txt"]];
-            AssertGetCommandLineArgumentsInformation(argsList, ArgumentHelper.OutputIncorrectCharacters, message);
+            AssertGetCommandLineArgumentsInformation(argsList, Language.OutputIncorrectCharacters, message);
 
         }
 
@@ -113,7 +114,7 @@ namespace WordFrequencyTests.HelpersTest
 
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.AreEqual(ArgumentHelper.OutputDirectoryNotExist, argumentsInformation.ErrorMessage);
+            Assert.AreEqual(Language.OutputDirectoryNotExist, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
@@ -124,7 +125,7 @@ namespace WordFrequencyTests.HelpersTest
 
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.AreEqual(ArgumentHelper.OutputDirectoryNotExist, argumentsInformation.ErrorMessage);
+            Assert.AreEqual(Language.OutputDirectoryNotExist, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]
@@ -135,7 +136,7 @@ namespace WordFrequencyTests.HelpersTest
 
             ArgumentsInformation argumentsInformation = ArgumentHelper.GetCommandLineArgumentsInformation(args);
 
-            Assert.AreEqual(ArgumentHelper.OutputPathIsAlreadyADirectory, argumentsInformation.ErrorMessage);
+            Assert.AreEqual(Language.OutputPathIsAlreadyADirectory, argumentsInformation.ErrorMessage);
         }
 
         [TestMethod]

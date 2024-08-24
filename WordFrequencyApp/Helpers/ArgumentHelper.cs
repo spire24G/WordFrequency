@@ -1,29 +1,18 @@
-﻿using WordFrequencyApp.Models;
+﻿using WordFrequencyApp.Localisation;
+using WordFrequencyApp.Models;
 
 namespace WordFrequencyApp.Helpers;
 
 public static class ArgumentHelper
 {
-    internal const string NeedTwoArguments = "They must have two command line arguments";
-    internal const string InputIncorrectCharacters = "Input file has incorrect characters";
-    internal const string OutputIncorrectCharacters = "Output file has incorrect characters";
-    internal const string InputFileNotExist = "Input file does not exist";
-    internal const string OutputDirectoryNotExist = "Output file's directory does not exist";
-    internal const string OutputPathIsAlreadyADirectory = "Output file path is an existing directory";
-
     /// <summary>
-    /// Validate that arguments contains input and output
+    /// Validates that arguments contains input and output
     /// </summary>
-    /// <param name="args">All command line arguments </param>
+    /// <param name="args">All command line arguments</param>
     public static ArgumentsInformation GetCommandLineArgumentsInformation(string[] args)
     {
         if (args.Length != 2)
-        {
-            return new ArgumentsInformation
-            {
-                ErrorMessage = NeedTwoArguments
-            };
-        }
+            return new ArgumentsInformation(Language.NeedTwoArguments);
 
         string inputPath = args[0];
         string outputPath = args[1];
@@ -33,53 +22,28 @@ public static class ArgumentHelper
 
         if (inputPath.IndexOfAny(Path.GetInvalidPathChars()) != -1
             || inputFileName.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
-        {
-            return new ArgumentsInformation
-            {
-                ErrorMessage = InputIncorrectCharacters,
-            };
-        }
+            return new ArgumentsInformation(Language.InputIncorrectCharacters);
+
 
         if (!File.Exists(inputPath))
-        {
-            return new ArgumentsInformation
-            {
-                ErrorMessage = InputFileNotExist,
-            };
-        }
+            return new ArgumentsInformation(Language.InputFileNotExist);
+
 
         if (outputPath.IndexOfAny(Path.GetInvalidPathChars()) != -1
             || outputFileName.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
-        {
-            return new ArgumentsInformation
-            {
-                ErrorMessage = OutputIncorrectCharacters,
-            };
-        }
+            return new ArgumentsInformation(Language.OutputIncorrectCharacters);
 
         string extension = Path.GetExtension(outputPath);
 
-        if(string.IsNullOrEmpty(extension) && Directory.Exists(outputPath))
-            return new ArgumentsInformation
-            {
-                ErrorMessage = OutputPathIsAlreadyADirectory,
-            };
+        if (string.IsNullOrEmpty(extension) && Directory.Exists(outputPath))
+            return new ArgumentsInformation(Language.OutputPathIsAlreadyADirectory);
 
         string? directoryName = Path.GetDirectoryName(outputPath);
-        
-        if(!string.IsNullOrEmpty(directoryName ) && !Directory.Exists(directoryName))
-        {
-            return new ArgumentsInformation
-            {
-                ErrorMessage = OutputDirectoryNotExist,
-            };
-        }
 
-        return new ArgumentsInformation
-        {
-            InputPath = inputPath,
-            OutputPath = outputPath,
-        };
+        if (!string.IsNullOrEmpty(directoryName) && !Directory.Exists(directoryName))
+            return new ArgumentsInformation(Language.OutputDirectoryNotExist);
+
+        return new ArgumentsInformation(inputPath, outputPath);
     }
 }
 

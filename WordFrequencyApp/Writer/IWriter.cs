@@ -2,5 +2,5 @@
 
 public interface IWriter
 {
-    bool WriteData(IReadOnlyCollection<string> data, string outPutPath);
+    bool WriteData(IEnumerable<string> data, string outPutPath);
 }
