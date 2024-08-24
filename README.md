@@ -9,7 +9,7 @@ https://dotnet.microsoft.com/fr-fr/download/dotnet/8.0
 
 You can either build or build+run the application
 
-To build the console application, you can execute the command line with a CMD in the folder WordFrequencyApp :
+To build the console application, you can execute the command line with a CMD in the folder WordFrequency:
 ```cs
 dotnet build WordFrequency.sln
 ```
